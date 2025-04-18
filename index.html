@@ -1,150 +1,198 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Happy Easter Festival</title>
+  <meta charset="UTF-8" />
+  <title>Easter Festival Registration</title>
   <style>
     body {
-      background: linear-gradient(to right, #fdf6e3, #ffdde1);
+      background: linear-gradient(to right, #fff1e6, #ffe6ec);
+      font-family: 'Segoe UI', sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      overflow: hidden;
       margin: 0;
-      font-family: 'Comic Sans MS', cursive;
+      overflow: auto;
     }
-
-    .card-frame {
-      background: #ffffffdd;
-      border: 10px solid #ffb6c1;
-      border-radius: 30px;
-      padding: 40px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    .container {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 700px;
+      width: 100%;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+    h2 {
       text-align: center;
-      max-width: 800px;
-      width: 90%;
-      position: relative;
-      z-index: 2;
-    }
-
-    .easter-message {
-      font-size: 2.5em;
-      font-weight: bold;
       color: #ff69b4;
-      animation: bounce 2s infinite ease-in-out, colorFlash 4s infinite;
     }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-20px); }
+    .form-group {
+      margin-bottom: 15px;
     }
-
-    @keyframes colorFlash {
-      0% { color: #ff69b4; }
-      25% { color: #ffcc00; }
-      50% { color: #32cd32; }
-      75% { color: #1e90ff; }
-      100% { color: #ff69b4; }
+    label {
+      display: block;
+      font-weight: bold;
     }
-
-    .easter-egg {
-      position: absolute;
-      width: 20px;
-      height: 30px;
-      background: radial-gradient(circle at 30% 30%, #f06, #fc3);
-      border-radius: 50% 50% 50% 50%;
-      animation: fall 4s linear infinite;
-    }
-
-    @keyframes fall {
-      0% {
-        transform: translateY(-100px) rotate(0deg);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(100vh) rotate(360deg);
-        opacity: 0;
-      }
-    }
-
-    #showMessageBtn, .audio-btn, #nameSubmitBtn {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 1.1em;
-      border: none;
-      border-radius: 10px;
-      background-color: #32cd32;
-      color: white;
-      cursor: pointer;
-      margin-right: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
-
-    #easterWish {
-      margin-top: 20px;
-      padding: 20px;
-      font-size: 1.2em;
-      display: none;
-      background: #fef7ff;
-      border-radius: 15px;
-      border: 2px dashed #ff69b4;
-    }
-
-    #nameInputContainer {
-      margin-bottom: 20px;
-    }
-
-    input[type="text"] {
+    input, select {
+      width: 100%;
       padding: 10px;
-      font-size: 1em;
+      margin-top: 5px;
       border: 2px solid #ccc;
       border-radius: 10px;
+      font-size: 1em;
     }
-
-    #audioControls {
-      margin-top: 20px;
+    button {
+      background-color: #32cd32;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1em;
+      margin-top: 15px;
+    }
+    #easterApp {
       display: none;
+    }
+    #userInfo {
+      text-align: center;
+      margin-bottom: 20px;
+      font-style: italic;
     }
   </style>
 </head>
 <body>
-  <div class="card-frame">
-    <div id="nameInputContainer">
-      <input type="text" id="userName" placeholder="Enter your name" />
-      <button id="nameSubmitBtn" onclick="showEasterGreeting()">Submit</button>
-    </div>
+  <div class="container" id="registrationForm">
+    <h2>Register to Celebrate Easter</h2>
+    <div class="form-group"><label for="firstName">First Name</label><input type="text" id="firstName" required /></div>
+    <div class="form-group"><label for="surname">Surname</label><input type="text" id="surname" required /></div>
+    <div class="form-group"><label for="email">Email</label><input type="email" id="email" required /></div>
+    <div class="form-group"><label for="tel">Tel No.</label><input type="tel" id="tel" required /></div>
+    <div class="form-group"><label for="residence">Place of Residence</label><input type="text" id="residence" required /></div>
+    <div class="form-group"><label for="course">Course</label><input type="text" id="course" required /></div>
+    <div class="form-group"><label for="campus">Campus</label><input type="text" id="campus" required /></div>
+    <button onclick="submitRegistration()">Register</button>
+  </div>  <div id="easterApp" class="container">
+    <div id="userInfo"></div>
+    <div id="easterContent"></div>
+  </div>  <!-- Firebase -->  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAiE03TcFb7TYHs4izHm7tmUsj94fCXhM4",
+      authDomain: "easter-festivalapp.firebaseapp.com",
+      projectId: "easter-festivalapp",
+      storageBucket: "easter-festivalapp.appspot.com",
+      messagingSenderId: "792821764826",
+      appId: "1:792821764826:web:77d9fe0311a7d200fd8be3",
+      measurementId: "G-5Z8DX18LWP"
+    };
 
-    <div id="easterGreeting" class="easter-message" style="display: none;"></div>
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-    <button id="showMessageBtn" onclick="showMessage()" style="display: none;">Click for Easter Message</button>
+    let currentStream;
+    let useFrontCamera = true;
 
-    <div id="easterWish"></div>
+    function submitRegistration() {
+      const user = {
+        firstName: document.getElementById("firstName").value.trim(),
+        surname: document.getElementById("surname").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        tel: document.getElementById("tel").value.trim(),
+        residence: document.getElementById("residence").value.trim(),
+        course: document.getElementById("course").value.trim(),
+        campus: document.getElementById("campus").value.trim(),
+        timestamp: new Date().toISOString()
+      };
 
-    <div id="audioControls">
-      <button class="audio-btn" onclick="playMusic()">Play Music</button>
-      <button class="audio-btn" onclick="pauseMusic()">Pause Music</button>
-    </div>
-  </div>
-
-  <audio id="easterAudio" loop>
-    <source src="Easter.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
-  </audio>
-
-  <script>
-    function showEasterGreeting() {
-      const name = document.getElementById("userName").value.trim();
-      if (name) {
-        document.getElementById("nameInputContainer").style.display = "none";
-        const greeting = document.getElementById("easterGreeting");
-        greeting.innerHTML = `Happy Easter Festival, ${name}!`;
-        greeting.style.display = "block";
-        document.getElementById("showMessageBtn").style.display = "inline-block";
-        document.getElementById("audioControls").style.display = "block";
-      } else {
-        alert("Please enter your name!");
+      if (Object.values(user).some(field => !field)) {
+        alert("Please fill in all fields.");
+        return;
       }
+
+      const newUserRef = database.ref("registrations").push();
+      newUserRef.set(user).then(() => {
+        document.getElementById("registrationForm").style.display = "none";
+        document.getElementById("easterApp").style.display = "block";
+
+        const name = `${user.firstName} ${user.surname}`;
+        document.getElementById("userInfo").innerHTML = `
+          Welcome <strong>${name}</strong> from ${user.campus} Campus!<br>
+          Let's celebrate Easter together.`;
+        loadEasterApp(name);
+      }).catch(error => {
+        console.error("Error saving user:", error);
+        alert("Failed to save registration. Try again later.");
+      });
+    }
+
+    function loadEasterApp(userName) {
+      const content = `
+        <div class="card-frame">
+          <div class="easter-message" style="text-align: center; font-size: 24px; color: #e91e63; font-weight: bold;">
+            Happy Easter Festival, ${userName}!
+          </div>
+
+          <img id="photo" alt="Your Photo" style="display: none; width: 150px; height: 150px; border-radius: 50%; margin: 20px auto; border: 5px solid #ff69b4;" />
+
+          <div id="cameraSection">
+            <video id="camera" autoplay playsinline style="width: 300px; border-radius: 20px;"></video><br>
+            <button onclick="capturePhoto()">Capture Photo</button>
+            <button onclick="switchCamera()">Switch Camera</button>
+          </div>
+
+          <button onclick="showMessage()">Click for Easter Message</button>
+
+          <div id="easterWish" style="display: none; margin-top: 20px; padding: 20px; background: #fef7ff; border-radius: 15px; border: 2px dashed #ff69b4;"></div>
+
+          <div style="margin-top: 20px;">
+            <button onclick="playMusic()">Play Music</button>
+            <button onclick="pauseMusic()">Pause Music</button>
+          </div>
+        </div>
+
+        <audio id="easterAudio" loop>
+          <source src="https://www.bensound.com/bensound-music/bensound-sunny.mp3" type="audio/mpeg">
+        </audio>
+      `;
+      document.getElementById("easterContent").innerHTML = content;
+      startCamera();
+    }
+
+    async function startCamera() {
+      if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+      }
+
+      const constraints = {
+        video: { facingMode: useFrontCamera ? "user" : "environment" },
+        audio: false
+      };
+
+      try {
+        currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+        document.getElementById("camera").srcObject = currentStream;
+      } catch (err) {
+        alert("Camera access denied or not supported.");
+        console.error(err);
+      }
+    }
+
+    function switchCamera() {
+      useFrontCamera = !useFrontCamera;
+      startCamera();
+    }
+
+    function capturePhoto() {
+      const video = document.getElementById("camera");
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataURL = canvas.toDataURL("image/png");
+      const photo = document.getElementById("photo");
+      photo.src = dataURL;
+      photo.style.display = "block";
     }
 
     function showMessage() {
@@ -156,28 +204,14 @@
       `;
       document.getElementById("easterWish").innerHTML = message;
       document.getElementById("easterWish").style.display = "block";
-      document.getElementById("showMessageBtn").style.display = "none";
     }
 
     function playMusic() {
-      const audio = document.getElementById("easterAudio");
-      audio.muted = false;
-      audio.play();
+      document.getElementById("easterAudio").play();
     }
 
     function pauseMusic() {
       document.getElementById("easterAudio").pause();
     }
-
-    // Falling Easter eggs
-    for (let i = 0; i < 70; i++) {
-      let egg = document.createElement("div");
-      egg.classList.add("easter-egg");
-      egg.style.left = Math.random() * 100 + "vw";
-      egg.style.background = `radial-gradient(circle at 30% 30%, hsl(${Math.random()*360}, 100%, 70%), hsl(${Math.random()*360}, 100%, 50%))`;
-      egg.style.animationDelay = Math.random() * 5 + "s";
-      document.body.appendChild(egg);
-    }
-  </script>
-</body>
+  </script></body>
 </html>
