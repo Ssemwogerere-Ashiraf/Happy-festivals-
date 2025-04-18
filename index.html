@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Happy Easter Festival</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #fdf6e3, #ffdde1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      margin: 0;
+      font-family: 'Comic Sans MS', cursive;
+    }
+
+    .card-frame {
+      background: #ffffffdd;
+      border: 10px solid #ffb6c1;
+      border-radius: 30px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      text-align: center;
+      max-width: 800px;
+      width: 90%;
+      position: relative;
+      z-index: 2;
+    }
+
+    .easter-message {
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #ff69b4;
+      animation: bounce 2s infinite ease-in-out, colorFlash 4s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    @keyframes colorFlash {
+      0% { color: #ff69b4; }
+      25% { color: #ffcc00; }
+      50% { color: #32cd32; }
+      75% { color: #1e90ff; }
+      100% { color: #ff69b4; }
+    }
+
+    .easter-egg {
+      position: absolute;
+      width: 20px;
+      height: 30px;
+      background: radial-gradient(circle at 30% 30%, #f06, #fc3);
+      border-radius: 50% 50% 50% 50%;
+      animation: fall 4s linear infinite;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    #showMessageBtn, .audio-btn, #nameSubmitBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1.1em;
+      border: none;
+      border-radius: 10px;
+      background-color: #32cd32;
+      color: white;
+      cursor: pointer;
+      margin-right: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    #easterWish {
+      margin-top: 20px;
+      padding: 20px;
+      font-size: 1.2em;
+      display: none;
+      background: #fef7ff;
+      border-radius: 15px;
+      border: 2px dashed #ff69b4;
+    }
+
+    #nameInputContainer {
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      font-size: 1em;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+    }
+
+    #audioControls {
+      margin-top: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="card-frame">
+    <div id="nameInputContainer">
+      <input type="text" id="userName" placeholder="Enter your name" />
+      <button id="nameSubmitBtn" onclick="showEasterGreeting()">Submit</button>
+    </div>
+
+    <div id="easterGreeting" class="easter-message" style="display: none;"></div>
+
+    <button id="showMessageBtn" onclick="showMessage()" style="display: none;">Click for Easter Message</button>
+
+    <div id="easterWish"></div>
+
+    <div id="audioControls">
+      <button class="audio-btn" onclick="playMusic()">Play Music</button>
+      <button class="audio-btn" onclick="pauseMusic()">Pause Music</button>
+    </div>
+  </div>
+
+  <audio id="easterAudio" loop>
+    <source src="Easter.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <script>
+    function showEasterGreeting() {
+      const name = document.getElementById("userName").value.trim();
+      if (name) {
+        document.getElementById("nameInputContainer").style.display = "none";
+        const greeting = document.getElementById("easterGreeting");
+        greeting.innerHTML = `Happy Easter Festival, ${name}!`;
+        greeting.style.display = "block";
+        document.getElementById("showMessageBtn").style.display = "inline-block";
+        document.getElementById("audioControls").style.display = "block";
+      } else {
+        alert("Please enter your name!");
+      }
+    }
+
+    function showMessage() {
+      const message = `
+        May this Easter bring you hope, joy, and new beginnings.<br><br>
+        Just as spring brings new life to the earth, may your heart be renewed with peace and your days filled with blessings.<br><br>
+        May the miracle of Easter touch your soul, and may you feel the love and light that this beautiful season offers.<br><br>
+        <strong>Happy Easter to you and your loved ones!</strong>
+      `;
+      document.getElementById("easterWish").innerHTML = message;
+      document.getElementById("easterWish").style.display = "block";
+      document.getElementById("showMessageBtn").style.display = "none";
+    }
+
+    function playMusic() {
+      const audio = document.getElementById("easterAudio");
+      audio.muted = false;
+      audio.play();
+    }
+
+    function pauseMusic() {
+      document.getElementById("easterAudio").pause();
+    }
+
+    // Falling Easter eggs
+    for (let i = 0; i < 70; i++) {
+      let egg = document.createElement("div");
+      egg.classList.add("easter-egg");
+      egg.style.left = Math.random() * 100 + "vw";
+      egg.style.background = `radial-gradient(circle at 30% 30%, hsl(${Math.random()*360}, 100%, 70%), hsl(${Math.random()*360}, 100%, 50%))`;
+      egg.style.animationDelay = Math.random() * 5 + "s";
+      document.body.appendChild(egg);
+    }
+  </script>
+</body>
+</html>
