@@ -15,17 +15,6 @@
       color: #4CAF50;
     }
 
-    .password-section {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .filter-controls {
-      display: flex;
-      justify-content: space-between;
-      margin: 20px 0;
-    }
-
     input, select {
       padding: 10px;
       font-size: 16px;
@@ -72,35 +61,40 @@
       display: none;
     }
 
-    /* Container for password */
+    /* LOGIN PAGE STYLES */
     .password-container {
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background: linear-gradient(45deg, #ff4b2b, #ff7e5f, #fbd786);
-      background-size: 400% 400%;
-      animation: gradientAnimation 10s ease infinite;
+      background: linear-gradient(-45deg, red, orange, yellow, pink);
+      background-size: 600% 600%;
+      animation: floatGradient 12s ease infinite;
     }
 
-    @keyframes gradientAnimation {
+    @keyframes floatGradient {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
 
-    /* Center content within password container */
     .password-section {
-      background-color: rgba(255, 255, 255, 0.8);
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+      text-align: center;
     }
 
+    .filter-controls {
+      display: flex;
+      justify-content: space-between;
+      margin: 20px 0;
+    }
   </style>
 </head>
 <body>
-  <!-- Password Section -->
+  <!-- Login Section -->
   <div class="password-container" id="passwordSection">
     <div class="password-section">
       <h2>Enter Admin Password</h2>
@@ -109,7 +103,7 @@
     </div>
   </div>
 
-  <!-- Data Section (Hidden initially) -->
+  <!-- Data Section -->
   <div id="dataSection">
     <h2>Registered Participants & Their Feedback</h2>
 
@@ -149,7 +143,7 @@
         </tr>
       </thead>
       <tbody id="tableBody">
-        <!-- Populated via Firebase -->
+        <!-- Firebase Data Loads Here -->
       </tbody>
     </table>
   </div>
@@ -176,7 +170,6 @@
     function validatePassword() {
       const password = document.getElementById("adminPassword").value;
       if (password === "Ashley") {
-        // Hide password section and show data section
         document.getElementById("passwordSection").style.display = "none";
         document.getElementById("dataSection").style.display = "block";
         loadTable();
@@ -188,7 +181,6 @@
     function loadTable() {
       db.ref("registrations").on("value", snapshot => {
         tableBody.innerHTML = "";
-
         snapshot.forEach(child => {
           const data = child.val();
           const feedback = data.feedback || "No feedback yet";
@@ -240,15 +232,10 @@
 
     function downloadData() {
       const format = document.getElementById("downloadFormat").value;
-      if (format === "csv") {
-        downloadCSV();
-      } else if (format === "xls") {
-        downloadXLS();
-      } else if (format === "pdf") {
-        downloadPDF();
-      } else if (format === "word") {
-        downloadWord();
-      }
+      if (format === "csv") downloadCSV();
+      else if (format === "xls") downloadXLS();
+      else if (format === "pdf") downloadPDF();
+      else if (format === "word") downloadWord();
     }
 
     function downloadCSV() {
@@ -269,15 +256,15 @@
     }
 
     function downloadXLS() {
-      // Implement XLS download logic here
+      // To be implemented
     }
 
     function downloadPDF() {
-      // Implement PDF download logic here
+      // To be implemented
     }
 
     function downloadWord() {
-      // Implement Word download logic here
+      // To be implemented
     }
   </script>
 </body>
