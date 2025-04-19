@@ -2,37 +2,44 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Easter Festival Registration</title>
   <style>
     body {
       background: linear-gradient(to right, #fff1e6, #ffe6ec);
       font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
       margin: 0;
-      overflow: auto;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      align-items: center;
     }
+
     .container {
       background: #ffffff;
       border-radius: 20px;
       padding: 30px;
       max-width: 700px;
-      width: 100%;
+      width: 90%;
       box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+      margin: 30px 0;
     }
+
     h2 {
       text-align: center;
       color: #ff69b4;
     }
+
     .form-group {
       margin-bottom: 15px;
     }
+
     label {
       display: block;
       font-weight: bold;
     }
+
     input, select, textarea {
       width: 100%;
       padding: 10px;
@@ -41,6 +48,7 @@
       border-radius: 10px;
       font-size: 1em;
     }
+
     button {
       background-color: #32cd32;
       color: white;
@@ -52,17 +60,17 @@
       font-size: 1em;
       margin-top: 15px;
     }
-    #easterApp {
-      display: none;
-    }
+
     .hidden {
       display: none;
     }
+
     #userInfo {
       text-align: center;
       margin-bottom: 20px;
       font-style: italic;
     }
+
     #photo {
       display: none;
       width: 200px;
@@ -74,6 +82,7 @@
       animation: glitter 2s infinite alternate;
       margin: 20px auto;
     }
+
     @keyframes glitter {
       0% {
         box-shadow: 0 0 10px #ff69b4, 0 0 20px #ff1493;
@@ -81,6 +90,34 @@
       100% {
         box-shadow: 0 0 20px #ff69b4, 0 0 40px #ff1493;
       }
+    }
+
+    .nav-buttons {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .nav-buttons a button {
+      background-color: #1e90ff;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 10px;
+      color: white;
+      font-weight: bold;
+      font-size: 1em;
+      cursor: pointer;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #fff0f5;
+      border-top: 2px dashed #ff69b4;
+      font-size: 0.95em;
+      color: #444;
+      width: 100%;
     }
   </style>
 </head>
@@ -108,188 +145,20 @@
     <button onclick="submitRegistration()">Register</button>
   </div>
 
-  <div id="easterApp" class="container">
+  <div id="easterApp" class="container hidden">
     <div id="userInfo"></div>
     <img id="photo" alt="Your Photo" />
     <div id="easterContent"></div>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAiE03TcFb7TYHs4izHm7tmUsj94fCXhM4",
-      authDomain: "easter-festivalapp.firebaseapp.com",
-      projectId: "easter-festivalapp",
-      storageBucket: "easter-festivalapp.appspot.com",
-      messagingSenderId: "792821764826",
-      appId: "1:792821764826:web:77d9fe0311a7d200fd8be3",
-      measurementId: "G-5Z8DX18LWP"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-
-    let currentUserRef;
-    let stream;
-
-    function toggleOccupationFields() {
-      const occupation = document.getElementById("occupation").value;
-      document.getElementById("courseGroup").classList.add("hidden");
-      document.getElementById("campusGroup").classList.add("hidden");
-      document.getElementById("businessNameGroup").classList.add("hidden");
-
-      if (occupation === "student") {
-        document.getElementById("courseGroup").classList.remove("hidden");
-        document.getElementById("campusGroup").classList.remove("hidden");
-      } else if (occupation === "self-employed" || occupation === "paid-employed") {
-        document.getElementById("businessNameGroup").classList.remove("hidden");
-      }
-    }
-
-    function submitRegistration() {
-      const user = {
-        firstName: document.getElementById("firstName").value.trim(),
-        surname: document.getElementById("surname").value.trim(),
-        email: document.getElementById("email").value.trim(),
-        tel: document.getElementById("tel").value.trim(),
-        residence: document.getElementById("residence").value.trim(),
-        occupation: document.getElementById("occupation").value,
-        course: document.getElementById("course").value.trim(),
-        campus: document.getElementById("campus").value.trim(),
-        businessName: document.getElementById("businessName").value.trim(),
-        timestamp: new Date().toISOString()
-      };
-
-      if (!user.firstName || !user.surname || !user.email || !user.tel || !user.residence || !user.occupation) {
-        alert("Please fill in all required fields.");
-        return;
-      }
-
-      currentUserRef = database.ref("registrations").push();
-      currentUserRef.set(user).then(() => {
-        document.getElementById("registrationForm").style.display = "none";
-        document.getElementById("easterApp").style.display = "block";
-
-        const name = `${user.firstName} ${user.surname}`;
-        document.getElementById("userInfo").innerHTML = `
-          Welcome <strong>${name}</strong>! Let's celebrate Easter together.
-        `;
-        loadEasterApp(name);
-      });
-    }
-
-    function loadEasterApp(userName) {
-      document.getElementById("easterContent").innerHTML = `
-        <div class="card-frame">
-          <div class="easter-message" style="text-align: center; font-size: 24px; color: #e91e63; font-weight: bold;">
-            Happy Easter Festival, ${userName}!
-          </div>
-          <select id="cameraSelect" onchange="switchCamera(this.value)">
-            <option value="user">Front Camera</option>
-            <option value="environment">Back Camera</option>
-          </select>
-          <video id="camera" autoplay style="width: 100%; border-radius: 20px; margin-top: 10px;"></video><br>
-          <button id="captureBtn" onclick="capturePhoto()">Capture Photo</button>
-          <button onclick="showMessage()">Click for Easter Message</button>
-          <div id="easterWish" style="display: none; margin-top: 20px; padding: 20px; background: #fef7ff; border-radius: 15px; border: 2px dashed #ff69b4;"></div>
-          <div style="margin-top: 20px;">
-            <button onclick="playMusic()">Play Music</button>
-            <button onclick="pauseMusic()">Pause Music</button>
-          </div>
-          <div id="feedbackSection" class="hidden" style="margin-top: 20px;">
-            <label for="feedback">Send us your feedback:</label>
-            <textarea id="feedback" placeholder="Enter your feedback..."></textarea>
-            <button onclick="submitFeedback()">Submit Feedback</button>
-          </div>
-        </div>
-        <audio id="easterAudio" loop>
-          <source src="Above all powers by Michael W Smith.mp3" type="audio/mpeg">
-        </audio>
-      `;
-      startCamera("user");
-    }
-
-    function startCamera(facingMode) {
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
-
-      navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { exact: facingMode } },
-        audio: false
-      }).then(s => {
-        stream = s;
-        document.getElementById("camera").srcObject = stream;
-      }).catch(e => {
-        alert("Camera access failed: " + e.message);
-      });
-    }
-
-    function switchCamera(mode) {
-      startCamera(mode);
-    }
-
-    function capturePhoto() {
-      const canvas = document.createElement("canvas");
-      const video = document.getElementById("camera");
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      canvas.getContext("2d").drawImage(video, 0, 0);
-      const imageData = canvas.toDataURL("image/png");
-
-      document.getElementById("photo").src = imageData;
-      document.getElementById("photo").style.display = "block";
-      document.getElementById("captureBtn").style.display = "none";
-      document.getElementById("camera").style.display = "none";
-      document.getElementById("cameraSelect").style.display = "none";
-
-      currentUserRef.child("photo").set(imageData);
-    }
-
-    function showMessage() {
-      const message = `
-        May this Easter bring you hope, joy, and new beginnings.<br><br>
-        Just as spring brings new life to the earth, may your heart be renewed with peace and your days filled with blessings.<br><br>
-        May the miracle of Easter touch your soul, and may you feel the love and light that this beautiful season offers.<br><br>
-        <strong>Happy Easter to you and your loved ones!</strong> <br> <br>
-        <strong>Stay Blessed!!</strong>
-      `;
-      document.getElementById("easterWish").innerHTML = message;
-      document.getElementById("easterWish").style.display = "block";
-      document.getElementById("feedbackSection").classList.remove("hidden");
-    }
-
-    function playMusic() {
-      document.getElementById("easterAudio").play();
-    }
-
-    function pauseMusic() {
-      document.getElementById("easterAudio").pause();
-    }
-
-    function submitFeedback() {
-      const feedback = document.getElementById("feedback").value.trim();
-      if (!feedback) {
-        alert("Please enter your feedback.");
-        return;
-      }
-      currentUserRef.child("feedback").set(feedback).then(() => {
-        alert("Thank you for your feedback!");
-        document.getElementById("feedbackSection").classList.add("hidden");
-      });
-    }
-  </script>
-  <br><br><br>
-  <div class="container">
-    <b>You can go to the main page with a single click</b>
-<a href="index.html"><button style="background-color: blue";><b style="color: white";>Link to main page</b></button></a> 
- <br><br><br>
- <a href="Admin_access.html"<button style="background-color: blue";><b style="color: white";>Admin_acess</b></button></a>	
+  <div class="container nav-buttons">
+    <p><b>Only Admins Have Access To This Page!!</b></p>
+    <a href="Admin_access.html"><button>Admin Access</button></a>
   </div>
-  <br><br><br>
- <footer>
-    <b>Contact Us On: <i>+256744201659</i></b> <br><br>
-    <strong>All Rights Reserved &reg</strong>
+
+  <footer>
+    <div><b>Contact Us On: <i>+256 744 201 659</i></b></div>
+    <strong>All Rights Reserved &reg; 2025</strong>
   </footer>
 </body>
 </html>
