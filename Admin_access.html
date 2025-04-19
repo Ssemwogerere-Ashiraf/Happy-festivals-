@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Index Page</title>
+  <style>
+    .admin-button {
+      background-color: #007BFF;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .admin-button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Welcome to the Index Page</h2>
+  
+  <button class="admin-button" onclick="goToAdminDashboard()">Go to Admin Dashboard</button>
+
+  <script>
+    function goToAdminDashboard() {
+      const password = prompt("Enter admin password:");
+      // You can change 'admin123' to your desired admin password
+      if (password === "admin123") {
+        window.location.href = "dashboard.html";
+      } else {
+        alert("Access denied. Admins only.");
+      }
+    }
+  </script> <br><br><br>
+  <b>You can go to the main page with a single click</b>
+<a href="index.html"><button style="background-color: blue";><b style="color: white";>Link to main page</b></button></a> 
+
+</body>
+</html>
