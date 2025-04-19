@@ -174,7 +174,7 @@
 
   <nav>
     <div class="logo">Easter Fest</div>
-    <span><span><button class="nav-toggler" onclick="toggleNav()">☰</button></span></span>
+    <button class="nav-toggler" onclick="toggleNav()">☰</button>
     <div class="nav-links" id="navLinks">
       <a href="#registrationForm">Register</a>
       <a href="#easterApp">Celebration</a>
@@ -189,6 +189,7 @@
     <div class="form-group"><label for="email">Email</label><input type="email" id="email" required /></div>
     <div class="form-group"><label for="tel">Tel No.</label><input type="tel" id="tel" required /></div>
     <div class="form-group"><label for="residence">Place of Residence</label><input type="text" id="residence" required /></div>
+
     <div class="form-group">
       <label for="occupation">Occupation</label>
       <select id="occupation" onchange="toggleOccupationFields()" required>
@@ -199,9 +200,51 @@
         <option value="unemployed">Unemployed</option>
       </select>
     </div>
-    <div class="form-group hidden" id="courseGroup"><label for="course">Course</label><input type="text" id="course" /></div>
-    <div class="form-group hidden" id="campusGroup"><label for="campus">Campus</label><input type="text" id="campus" /></div>
-    <div class="form-group hidden" id="businessNameGroup"><label for="businessName">Business Name</label><input type="text" id="businessName" /></div>
+
+    <div class="form-group hidden" id="businessNameGroup">
+      <label for="businessName">Business Name</label>
+      <input type="text" id="businessName" required />
+    </div>
+
+    <div class="form-group hidden" id="studentLevelGroup">
+      <label for="studentLevel">Level of Study</label>
+      <select id="studentLevel" onchange="toggleStudentLevel()" required>
+        <option value="">-- Select Level --</option>
+        <option value="secondary">Secondary</option>
+        <option value="institute">Institute</option>
+        <option value="university">University</option>
+      </select>
+    </div>
+
+    <div class="form-group hidden" id="secondaryLevelGroup">
+      <label for="secondaryLevel">Secondary Level</label>
+      <select id="secondaryLevel" onchange="toggleSecondaryOptions()" required>
+        <option value="">-- Select Secondary Level --</option>
+        <option value="olevel">O Level</option>
+        <option value="alevel">A Level</option>
+      </select>
+    </div>
+
+    <div class="form-group hidden" id="schoolNameGroup">
+      <label for="schoolName">School Name</label>
+      <input type="text" id="schoolName" required />
+    </div>
+
+    <div class="form-group hidden" id="subjectCombinationGroup">
+      <label for="subjectCombination">Subject Combination</label>
+      <input type="text" id="subjectCombination" required />
+    </div>
+
+    <div class="form-group hidden" id="instituteNameGroup">
+      <label for="instituteName">Institute Name</label>
+      <input type="text" id="instituteName" required />
+    </div>
+
+    <div class="form-group hidden" id="campusNameGroup">
+      <label for="campusName">Campus Name</label>
+      <input type="text" id="campusName" required />
+    </div>
+
     <button onclick="submitRegistration()">Register</button>
   </div>
 
@@ -232,22 +275,8 @@
       'linear-gradient(to right, #f093fb, #f5576c)',
       'linear-gradient(to right, #4facfe, #00f2fe)',
       'linear-gradient(to right, #43e97b, #38f9d7)',
-      'linear-gradient(to right, #667eea, #764ba2)',
-      'linear-gradient(to right, #ff6a00, #ee0979)',
-      'linear-gradient(to right, #30cfd0, #330867)',
-      'linear-gradient(to right, #fddb92, #d1fdff)',
-      'linear-gradient(to right, #ffafbd, #ffc3a0)',
-      'linear-gradient(to right, #2193b0, #6dd5ed)',
-      'linear-gradient(to right, #cc2b5e, #753a88)',
-      'linear-gradient(to right, #42275a, #734b6d)',
-      'linear-gradient(to right, #141e30, #243b55)',
-      'linear-gradient(to right, #00c3ff, #ffff1c)',
-      'linear-gradient(to right, #f12711, #f5af19)',
-      'linear-gradient(to right, #12c2e9, #c471ed, #f64f59)',
-      'linear-gradient(to right, #ff5f6d, #ffc371)',
-      'linear-gradient(to right, #00b09b, #96c93d)'
+      'linear-gradient(to right, #667eea, #764ba2)'
     ];
-
     let index = 0;
     setInterval(() => {
       document.body.style.background = gradients[index];
@@ -257,6 +286,57 @@
     function toggleNav() {
       const navLinks = document.getElementById("navLinks");
       navLinks.classList.toggle("active");
+    }
+
+    function toggleOccupationFields() {
+      const occupation = document.getElementById("occupation").value;
+      document.getElementById("businessNameGroup").classList.add("hidden");
+      document.getElementById("studentLevelGroup").classList.add("hidden");
+      document.getElementById("secondaryLevelGroup").classList.add("hidden");
+      document.getElementById("schoolNameGroup").classList.add("hidden");
+      document.getElementById("subjectCombinationGroup").classList.add("hidden");
+      document.getElementById("instituteNameGroup").classList.add("hidden");
+      document.getElementById("campusNameGroup").classList.add("hidden");
+
+      if (occupation === "self-employed" || occupation === "paid-employed") {
+        document.getElementById("businessNameGroup").classList.remove("hidden");
+      } else if (occupation === "student") {
+        document.getElementById("studentLevelGroup").classList.remove("hidden");
+      }
+    }
+
+    function toggleStudentLevel() {
+      const level = document.getElementById("studentLevel").value;
+      document.getElementById("secondaryLevelGroup").classList.add("hidden");
+      document.getElementById("schoolNameGroup").classList.add("hidden");
+      document.getElementById("subjectCombinationGroup").classList.add("hidden");
+      document.getElementById("instituteNameGroup").classList.add("hidden");
+      document.getElementById("campusNameGroup").classList.add("hidden");
+
+      if (level === "secondary") {
+        document.getElementById("secondaryLevelGroup").classList.remove("hidden");
+      } else if (level === "institute") {
+        document.getElementById("instituteNameGroup").classList.remove("hidden");
+      } else if (level === "university") {
+        document.getElementById("campusNameGroup").classList.remove("hidden");
+      }
+    }
+
+    function toggleSecondaryOptions() {
+      const secondary = document.getElementById("secondaryLevel").value;
+      document.getElementById("schoolNameGroup").classList.add("hidden");
+      document.getElementById("subjectCombinationGroup").classList.add("hidden");
+
+      if (secondary === "olevel") {
+        document.getElementById("schoolNameGroup").classList.remove("hidden");
+      } else if (secondary === "alevel") {
+        document.getElementById("subjectCombinationGroup").classList.remove("hidden");
+        document.getElementById("schoolNameGroup").classList.remove("hidden");
+      }
+    }
+
+    function submitRegistration() {
+      alert("Registration submitted successfully!");
     }
   </script>
 </body>
