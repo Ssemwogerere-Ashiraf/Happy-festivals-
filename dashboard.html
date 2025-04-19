@@ -1,114 +1,164 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Registered Participants & Feedback</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f8f8ff;
       padding: 30px;
-    }h2 {
-  text-align: center;
-  color: #4CAF50;
-}
+      margin: 0;
+    }
 
-.password-section {
-  text-align: center;
-  margin-bottom: 20px;
-}
+    h2 {
+      text-align: center;
+      color: #4CAF50;
+    }
 
-.filter-controls {
-  display: flex;
-  justify-content: space-between;
-  margin: 20px 0;
-}
+    .password-section {
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-input, select {
-  padding: 10px;
-  font-size: 16px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
+    .filter-controls {
+      display: flex;
+      justify-content: space-between;
+      margin: 20px 0;
+    }
 
-button {
-  padding: 10px 20px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
+    input, select {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 25px;
-}
+    button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
 
-th, td {
-  border: 1px solid #ccc;
-  padding: 10px;
-  text-align: left;
-  vertical-align: top;
-}
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 25px;
+    }
 
-th {
-  background-color: #4CAF50;
-  color: white;
-}
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
 
-tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
+    th {
+      background-color: #4CAF50;
+      color: white;
+    }
 
-img {
-  border-radius: 50%;
-}
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
 
-#dataSection {
-  display: none;
-}
+    img {
+      border-radius: 50%;
+    }
+
+    #dataSection {
+      display: none;
+    }
+
+    /* Container for password */
+    .password-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(45deg, #ff4b2b, #ff7e5f, #fbd786);
+      background-size: 400% 400%;
+      animation: gradientAnimation 10s ease infinite;
+    }
+
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Center content within password container */
+    .password-section {
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
 
   </style>
 </head>
-<body>  <div class="password-section" id="passwordSection">
-    <h2>Enter Admin Password</h2>
-    <input type="password" id="adminPassword" placeholder="Enter Password">
-    <button onclick="validatePassword()">Submit</button>
-  </div>  <div id="dataSection">
-    <h2>Registered Participants & Their Feedback</h2><div class="filter-controls">
-  <input type="text" id="searchInput" oninput="filterTable()" placeholder="Search by name, email, etc...">
-  <select id="filterOccupation" onchange="filterTable()">
-    <option value="">All Occupations</option>
-    <option value="Student">Student</option>
-    <option value="Self Employed">Self Employed</option>
-    <option value="Paid Employed">Paid Employed</option>
-    <option value="Unemployed">Unemployed</option>
-  </select>
-  <button onclick="downloadCSV()">Download CSV</button>
-</div>
+<body>
+  <!-- Password Section -->
+  <div class="password-container" id="passwordSection">
+    <div class="password-section">
+      <h2>Enter Admin Password</h2>
+      <input type="password" id="adminPassword" placeholder="Enter Password">
+      <button onclick="validatePassword()">Submit</button>
+    </div>
+  </div>
 
-<table id="participantsTable">
-  <thead>
-    <tr>
-      <th>First Name</th>
-      <th>Surname</th>
-      <th>Email</th>
-      <th>Tel</th>
-      <th>Residence</th>
-      <th>Occupation</th>
-      <th>Level</th>
-      <th>Details</th>
-      <th>Photo</th>
-      <th>Feedback</th>
-    </tr>
-  </thead>
-  <tbody id="tableBody">
-    <!-- Populated via Firebase -->
-  </tbody>
-</table>
+  <!-- Data Section (Hidden initially) -->
+  <div id="dataSection">
+    <h2>Registered Participants & Their Feedback</h2>
 
-  </div>  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>  <script>
+    <div class="filter-controls">
+      <input type="text" id="searchInput" oninput="filterTable()" placeholder="Search by name, email, etc...">
+      <select id="filterOccupation" onchange="filterTable()">
+        <option value="">All Occupations</option>
+        <option value="Student">Student</option>
+        <option value="Self Employed">Self Employed</option>
+        <option value="Paid Employed">Paid Employed</option>
+        <option value="Unemployed">Unemployed</option>
+      </select>
+
+      <!-- Download Format Dropdown -->
+      <select id="downloadFormat">
+        <option value="csv">Download as CSV</option>
+        <option value="xls">Download as Excel (XLS)</option>
+        <option value="pdf">Download as PDF</option>
+        <option value="word">Download as Word</option>
+      </select>
+      <button onclick="downloadData()">Download</button>
+    </div>
+
+    <table id="participantsTable">
+      <thead>
+        <tr>
+          <th>First Name</th>
+          <th>Surname</th>
+          <th>Email</th>
+          <th>Tel</th>
+          <th>Residence</th>
+          <th>Occupation</th>
+          <th>Level</th>
+          <th>Details</th>
+          <th>Photo</th>
+          <th>Feedback</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <!-- Populated via Firebase -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAiE03TcFb7TYHs4izHm7tmUsj94fCXhM4",
       authDomain: "easter-festivalapp.firebaseapp.com",
@@ -126,6 +176,7 @@ img {
     function validatePassword() {
       const password = document.getElementById("adminPassword").value;
       if (password === "Ashley") {
+        // Hide password section and show data section
         document.getElementById("passwordSection").style.display = "none";
         document.getElementById("dataSection").style.display = "block";
         loadTable();
@@ -187,6 +238,19 @@ img {
       });
     }
 
+    function downloadData() {
+      const format = document.getElementById("downloadFormat").value;
+      if (format === "csv") {
+        downloadCSV();
+      } else if (format === "xls") {
+        downloadXLS();
+      } else if (format === "pdf") {
+        downloadPDF();
+      } else if (format === "word") {
+        downloadWord();
+      }
+    }
+
     function downloadCSV() {
       let csv = "First Name,Surname,Email,Tel,Residence,Occupation,Level,Details,Feedback\n";
       document.querySelectorAll("#tableBody tr").forEach(row => {
@@ -203,5 +267,18 @@ img {
       a.click();
       document.body.removeChild(a);
     }
-  </script></body>
-  </html>
+
+    function downloadXLS() {
+      // Implement XLS download logic here
+    }
+
+    function downloadPDF() {
+      // Implement PDF download logic here
+    }
+
+    function downloadWord() {
+      // Implement Word download logic here
+    }
+  </script>
+</body>
+</html>
