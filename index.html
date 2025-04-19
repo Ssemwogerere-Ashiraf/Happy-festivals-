@@ -14,6 +14,73 @@
       flex-direction: column;
       min-height: 100vh;
       align-items: center;
+      transition: background 1.5s ease-in-out;
+    }
+
+    nav {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background-color: #ff69b4;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: bold;
+      color: white;
+    }
+
+    .nav-toggler {
+      background-color: white;
+      color: #ff69b4;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-size: 24px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      display: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: white;
+      font-weight: 500;
+      font-size: 18px;
+    }
+
+    @media (max-width: 768px) {
+      .nav-toggler {
+        display: block;
+      }
+
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        background: #ff69b4;
+        flex-direction: column;
+        border-radius: 10px;
+        padding: 15px;
+        z-index: 1000;
+      }
+
+      .nav-links a {
+        margin: 10px 0;
+      }
+
+      .nav-links.active {
+        display: flex;
+      }
     }
 
     .container {
@@ -92,24 +159,6 @@
       }
     }
 
-    .nav-buttons {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .nav-buttons a button {
-      background-color: #1e90ff;
-      border: none;
-      padding: 12px 25px;
-      border-radius: 10px;
-      color: white;
-      font-weight: bold;
-      font-size: 1em;
-      cursor: pointer;
-    }
-
     footer {
       text-align: center;
       padding: 20px;
@@ -122,6 +171,17 @@
   </style>
 </head>
 <body>
+
+  <nav>
+    <div class="logo">Easter Fest</div>
+    <span><span><button class="nav-toggler" onclick="toggleNav()">☰</button></span></span>
+    <div class="nav-links" id="navLinks">
+      <a href="#registrationForm">Register</a>
+      <a href="#easterApp">Celebration</a>
+      <a href="Admin_access.html">Admin</a>
+    </div>
+  </nav>
+
   <div class="container" id="registrationForm">
     <h2>Register to Celebrate Easter With Ashiraf</h2>
     <div class="form-group"><label for="firstName">First Name</label><input type="text" id="firstName" required /></div>
@@ -160,5 +220,44 @@
     <div><b>Contact Us On: <i>+256 744 201 659</i></b></div>
     <strong>All Rights Reserved &reg; 2025</strong>
   </footer>
+
+  <script>
+    const gradients = [
+      'linear-gradient(to right, #ff9a9e, #fad0c4)',
+      'linear-gradient(to right, #a1c4fd, #c2e9fb)',
+      'linear-gradient(to right, #ffecd2, #fcb69f)',
+      'linear-gradient(to right, #f6d365, #fda085)',
+      'linear-gradient(to right, #84fab0, #8fd3f4)',
+      'linear-gradient(to right, #cfd9df, #e2ebf0)',
+      'linear-gradient(to right, #f093fb, #f5576c)',
+      'linear-gradient(to right, #4facfe, #00f2fe)',
+      'linear-gradient(to right, #43e97b, #38f9d7)',
+      'linear-gradient(to right, #667eea, #764ba2)',
+      'linear-gradient(to right, #ff6a00, #ee0979)',
+      'linear-gradient(to right, #30cfd0, #330867)',
+      'linear-gradient(to right, #fddb92, #d1fdff)',
+      'linear-gradient(to right, #ffafbd, #ffc3a0)',
+      'linear-gradient(to right, #2193b0, #6dd5ed)',
+      'linear-gradient(to right, #cc2b5e, #753a88)',
+      'linear-gradient(to right, #42275a, #734b6d)',
+      'linear-gradient(to right, #141e30, #243b55)',
+      'linear-gradient(to right, #00c3ff, #ffff1c)',
+      'linear-gradient(to right, #f12711, #f5af19)',
+      'linear-gradient(to right, #12c2e9, #c471ed, #f64f59)',
+      'linear-gradient(to right, #ff5f6d, #ffc371)',
+      'linear-gradient(to right, #00b09b, #96c93d)'
+    ];
+
+    let index = 0;
+    setInterval(() => {
+      document.body.style.background = gradients[index];
+      index = (index + 1) % gradients.length;
+    }, 3000);
+
+    function toggleNav() {
+      const navLinks = document.getElementById("navLinks");
+      navLinks.classList.toggle("active");
+    }
+  </script>
 </body>
 </html>
