@@ -1,0 +1,207 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Registered Participants & Feedback</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f8ff;
+      padding: 30px;
+    }h2 {
+  text-align: center;
+  color: #4CAF50;
+}
+
+.password-section {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.filter-controls {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+input, select {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 25px;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background-color: #4CAF50;
+  color: white;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+img {
+  border-radius: 50%;
+}
+
+#dataSection {
+  display: none;
+}
+
+  </style>
+</head>
+<body>  <div class="password-section" id="passwordSection">
+    <h2>Enter Admin Password</h2>
+    <input type="password" id="adminPassword" placeholder="Enter Password">
+    <button onclick="validatePassword()">Submit</button>
+  </div>  <div id="dataSection">
+    <h2>Registered Participants & Their Feedback</h2><div class="filter-controls">
+  <input type="text" id="searchInput" oninput="filterTable()" placeholder="Search by name, email, etc...">
+  <select id="filterOccupation" onchange="filterTable()">
+    <option value="">All Occupations</option>
+    <option value="Student">Student</option>
+    <option value="Self Employed">Self Employed</option>
+    <option value="Paid Employed">Paid Employed</option>
+    <option value="Unemployed">Unemployed</option>
+  </select>
+  <button onclick="downloadCSV()">Download CSV</button>
+</div>
+
+<table id="participantsTable">
+  <thead>
+    <tr>
+      <th>First Name</th>
+      <th>Surname</th>
+      <th>Email</th>
+      <th>Tel</th>
+      <th>Residence</th>
+      <th>Occupation</th>
+      <th>Level</th>
+      <th>Details</th>
+      <th>Photo</th>
+      <th>Feedback</th>
+    </tr>
+  </thead>
+  <tbody id="tableBody">
+    <!-- Populated via Firebase -->
+  </tbody>
+</table>
+
+  </div>  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAiE03TcFb7TYHs4izHm7tmUsj94fCXhM4",
+      authDomain: "easter-festivalapp.firebaseapp.com",
+      projectId: "easter-festivalapp",
+      storageBucket: "easter-festivalapp.appspot.com",
+      messagingSenderId: "792821764826",
+      appId: "1:792821764826:web:77d9fe0311a7d200fd8be3",
+      measurementId: "G-5Z8DX18LWP"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const tableBody = document.getElementById("tableBody");
+
+    function validatePassword() {
+      const password = document.getElementById("adminPassword").value;
+      if (password === "Ashley") {
+        document.getElementById("passwordSection").style.display = "none";
+        document.getElementById("dataSection").style.display = "block";
+        loadTable();
+      } else {
+        alert("Incorrect password.");
+      }
+    }
+
+    function loadTable() {
+      db.ref("registrations").on("value", snapshot => {
+        tableBody.innerHTML = "";
+
+        snapshot.forEach(child => {
+          const data = child.val();
+          const feedback = data.feedback || "No feedback yet";
+
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${data.firstName || ''}</td>
+            <td>${data.surname || ''}</td>
+            <td>${data.email || ''}</td>
+            <td>${data.tel || ''}</td>
+            <td>${data.residence || ''}</td>
+            <td>${data.occupation || ''}</td>
+            <td>${data.level || ''}</td>
+            <td>${formatDetails(data)}</td>
+            <td>${data.photoURL ? `<img src="${data.photoURL}" width="60" height="60">` : 'N/A'}</td>
+            <td>${feedback}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+      });
+    }
+
+    function formatDetails(data) {
+      if (data.occupation === 'Student') {
+        if (data.level === 'Secondary') {
+          return data.secondaryLevel === 'O'
+            ? `O Level - ${data.schoolName}`
+            : `A Level - ${data.schoolName} (${data.subjectCombo})`;
+        } else {
+          return `Course: ${data.course || '-'}, Campus: ${data.campus || '-'}`;
+        }
+      } else {
+        return `Business: ${data.businessName || 'N/A'}`;
+      }
+    }
+
+    function filterTable() {
+      const search = document.getElementById("searchInput").value.toLowerCase();
+      const occupation = document.getElementById("filterOccupation").value;
+      const rows = document.querySelectorAll("#tableBody tr");
+
+      rows.forEach(row => {
+        const cells = row.querySelectorAll("td");
+        const matchesSearch = Array.from(cells).some(td => td.textContent.toLowerCase().includes(search));
+        const matchesOccupation = !occupation || cells[5].textContent === occupation;
+        row.style.display = matchesSearch && matchesOccupation ? "" : "none";
+      });
+    }
+
+    function downloadCSV() {
+      let csv = "First Name,Surname,Email,Tel,Residence,Occupation,Level,Details,Feedback\n";
+      document.querySelectorAll("#tableBody tr").forEach(row => {
+        const cols = row.querySelectorAll("td");
+        const line = Array.from(cols).map(col => '"' + col.textContent + '"').join(',');
+        csv += line + "\n";
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "registrations.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  </script></body>
+  </html>
