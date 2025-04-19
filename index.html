@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Easter Festival Registration</title>
@@ -32,7 +33,7 @@
       display: block;
       font-weight: bold;
     }
-    input, select {
+    input, select, textarea {
       width: 100%;
       padding: 10px;
       margin-top: 5px;
@@ -54,10 +55,32 @@
     #easterApp {
       display: none;
     }
+    .hidden {
+      display: none;
+    }
     #userInfo {
       text-align: center;
       margin-bottom: 20px;
       font-style: italic;
+    }
+    #photo {
+      display: none;
+      width: 200px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 5px solid #ff69b4;
+      box-shadow: 0 0 15px #ff69b4, 0 0 30px #ff1493, 0 0 45px #ff69b4;
+      animation: glitter 2s infinite alternate;
+      margin: 20px auto;
+    }
+    @keyframes glitter {
+      0% {
+        box-shadow: 0 0 10px #ff69b4, 0 0 20px #ff1493;
+      }
+      100% {
+        box-shadow: 0 0 20px #ff69b4, 0 0 40px #ff1493;
+      }
     }
   </style>
 </head>
@@ -69,13 +92,31 @@
     <div class="form-group"><label for="email">Email</label><input type="email" id="email" required /></div>
     <div class="form-group"><label for="tel">Tel No.</label><input type="tel" id="tel" required /></div>
     <div class="form-group"><label for="residence">Place of Residence</label><input type="text" id="residence" required /></div>
-    <div class="form-group"><label for="course">Course</label><input type="text" id="course" required /></div>
-    <div class="form-group"><label for="campus">Campus</label><input type="text" id="campus" required /></div>
+    <div class="form-group">
+      <label for="occupation">Occupation</label>
+      <select id="occupation" onchange="toggleOccupationFields()" required>
+        <option value="">-- Select Occupation --</option>
+        <option value="student">Student</option>
+        <option value="self-employed">Self Employed</option>
+        <option value="paid-employed">Paid Employed</option>
+        <option value="unemployed">Unemployed</option>
+      </select>
+    </div>
+    <div class="form-group hidden" id="courseGroup"><label for="course">Course</label><input type="text" id="course" /></div>
+    <div class="form-group hidden" id="campusGroup"><label for="campus">Campus</label><input type="text" id="campus" /></div>
+    <div class="form-group hidden" id="businessNameGroup"><label for="businessName">Business Name</label><input type="text" id="businessName" /></div>
     <button onclick="submitRegistration()">Register</button>
-  </div>  <div id="easterApp" class="container">
+  </div>
+
+  <div id="easterApp" class="container">
     <div id="userInfo"></div>
+    <img id="photo" alt="Your Photo" />
     <div id="easterContent"></div>
-  </div>  <!-- Firebase -->  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>  <script>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAiE03TcFb7TYHs4izHm7tmUsj94fCXhM4",
       authDomain: "easter-festivalapp.firebaseapp.com",
@@ -85,12 +126,25 @@
       appId: "1:792821764826:web:77d9fe0311a7d200fd8be3",
       measurementId: "G-5Z8DX18LWP"
     };
-
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    let currentStream;
-    let useFrontCamera = true;
+    let currentUserRef;
+    let stream;
+
+    function toggleOccupationFields() {
+      const occupation = document.getElementById("occupation").value;
+      document.getElementById("courseGroup").classList.add("hidden");
+      document.getElementById("campusGroup").classList.add("hidden");
+      document.getElementById("businessNameGroup").classList.add("hidden");
+
+      if (occupation === "student") {
+        document.getElementById("courseGroup").classList.remove("hidden");
+        document.getElementById("campusGroup").classList.remove("hidden");
+      } else if (occupation === "self-employed" || occupation === "paid-employed") {
+        document.getElementById("businessNameGroup").classList.remove("hidden");
+      }
+    }
 
     function submitRegistration() {
       const user = {
@@ -99,100 +153,97 @@
         email: document.getElementById("email").value.trim(),
         tel: document.getElementById("tel").value.trim(),
         residence: document.getElementById("residence").value.trim(),
+        occupation: document.getElementById("occupation").value,
         course: document.getElementById("course").value.trim(),
         campus: document.getElementById("campus").value.trim(),
+        businessName: document.getElementById("businessName").value.trim(),
         timestamp: new Date().toISOString()
       };
 
-      if (Object.values(user).some(field => !field)) {
-        alert("Please fill in all fields.");
+      if (!user.firstName || !user.surname || !user.email || !user.tel || !user.residence || !user.occupation) {
+        alert("Please fill in all required fields.");
         return;
       }
 
-      const newUserRef = database.ref("registrations").push();
-      newUserRef.set(user).then(() => {
+      currentUserRef = database.ref("registrations").push();
+      currentUserRef.set(user).then(() => {
         document.getElementById("registrationForm").style.display = "none";
         document.getElementById("easterApp").style.display = "block";
 
         const name = `${user.firstName} ${user.surname}`;
         document.getElementById("userInfo").innerHTML = `
-          Welcome <strong>${name}</strong> from ${user.campus} Campus!<br>
-          Let's celebrate Easter together.`;
+          Welcome <strong>${name}</strong>! Let's celebrate Easter together.
+        `;
         loadEasterApp(name);
-      }).catch(error => {
-        console.error("Error saving user:", error);
-        alert("Failed to save registration. Try again later.");
       });
     }
 
     function loadEasterApp(userName) {
-      const content = `
+      document.getElementById("easterContent").innerHTML = `
         <div class="card-frame">
           <div class="easter-message" style="text-align: center; font-size: 24px; color: #e91e63; font-weight: bold;">
             Happy Easter Festival, ${userName}!
           </div>
-
-          <img id="photo" alt="Your Photo" style="display: none; width: 150px; height: 150px; border-radius: 50%; margin: 20px auto; border: 5px solid #ff69b4;" />
-
-          <div id="cameraSection">
-            <video id="camera" autoplay playsinline style="width: 300px; border-radius: 20px;"></video><br>
-            <button onclick="capturePhoto()">Capture Photo</button>
-            <button onclick="switchCamera()">Switch Camera</button>
-          </div>
-
+          <select id="cameraSelect" onchange="switchCamera(this.value)">
+            <option value="user">Front Camera</option>
+            <option value="environment">Back Camera</option>
+          </select>
+          <video id="camera" autoplay style="width: 100%; border-radius: 20px; margin-top: 10px;"></video><br>
+          <button id="captureBtn" onclick="capturePhoto()">Capture Photo</button>
           <button onclick="showMessage()">Click for Easter Message</button>
-
           <div id="easterWish" style="display: none; margin-top: 20px; padding: 20px; background: #fef7ff; border-radius: 15px; border: 2px dashed #ff69b4;"></div>
-
           <div style="margin-top: 20px;">
             <button onclick="playMusic()">Play Music</button>
             <button onclick="pauseMusic()">Pause Music</button>
           </div>
+          <div id="feedbackSection" class="hidden" style="margin-top: 20px;">
+            <label for="feedback">Send us your feedback:</label>
+            <textarea id="feedback" placeholder="Enter your feedback..."></textarea>
+            <button onclick="submitFeedback()">Submit Feedback</button>
+          </div>
         </div>
-
         <audio id="easterAudio" loop>
           <source src="https://www.bensound.com/bensound-music/bensound-sunny.mp3" type="audio/mpeg">
         </audio>
       `;
-      document.getElementById("easterContent").innerHTML = content;
-      startCamera();
+      startCamera("user");
     }
 
-    async function startCamera() {
-      if (currentStream) {
-        currentStream.getTracks().forEach(track => track.stop());
+    function startCamera(facingMode) {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
       }
 
-      const constraints = {
-        video: { facingMode: useFrontCamera ? "user" : "environment" },
+      navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { exact: facingMode } },
         audio: false
-      };
-
-      try {
-        currentStream = await navigator.mediaDevices.getUserMedia(constraints);
-        document.getElementById("camera").srcObject = currentStream;
-      } catch (err) {
-        alert("Camera access denied or not supported.");
-        console.error(err);
-      }
+      }).then(s => {
+        stream = s;
+        document.getElementById("camera").srcObject = stream;
+      }).catch(e => {
+        alert("Camera access failed: " + e.message);
+      });
     }
 
-    function switchCamera() {
-      useFrontCamera = !useFrontCamera;
-      startCamera();
+    function switchCamera(mode) {
+      startCamera(mode);
     }
 
     function capturePhoto() {
-      const video = document.getElementById("camera");
       const canvas = document.createElement("canvas");
+      const video = document.getElementById("camera");
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const dataURL = canvas.toDataURL("image/png");
-      const photo = document.getElementById("photo");
-      photo.src = dataURL;
-      photo.style.display = "block";
+      canvas.getContext("2d").drawImage(video, 0, 0);
+      const imageData = canvas.toDataURL("image/png");
+
+      document.getElementById("photo").src = imageData;
+      document.getElementById("photo").style.display = "block";
+      document.getElementById("captureBtn").style.display = "none";
+      document.getElementById("camera").style.display = "none";
+      document.getElementById("cameraSelect").style.display = "none";
+
+      currentUserRef.child("photo").set(imageData);
     }
 
     function showMessage() {
@@ -204,6 +255,7 @@
       `;
       document.getElementById("easterWish").innerHTML = message;
       document.getElementById("easterWish").style.display = "block";
+      document.getElementById("feedbackSection").classList.remove("hidden");
     }
 
     function playMusic() {
@@ -213,5 +265,18 @@
     function pauseMusic() {
       document.getElementById("easterAudio").pause();
     }
-  </script></body>
+
+    function submitFeedback() {
+      const feedback = document.getElementById("feedback").value.trim();
+      if (!feedback) {
+        alert("Please enter your feedback.");
+        return;
+      }
+      currentUserRef.child("feedback").set(feedback).then(() => {
+        alert("Thank you for your feedback!");
+        document.getElementById("feedbackSection").classList.add("hidden");
+      });
+    }
+  </script>
+</body>
 </html>
